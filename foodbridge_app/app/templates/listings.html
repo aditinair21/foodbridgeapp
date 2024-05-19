@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Donation Listings</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/styles.css') }}">
+</head>
+<body>
+    <header>
+        <h1>Food Bridge</h1>
+    </header>
+    <main>
+        <div class="container">
+            <h2>Donation Listings</h2>
+            {% if user_category == 'Donor' %}
+            {% endif %}
+                <div class="action-buttons">
+                    <a href="{{ url_for('main.create_donation') }}" class="btn">Create Donation</a>
+                </div>
+            <div class="donation-items">
+                <table class="donation-table">
+                    <tr>
+                        <th>Title</th>
+                        <th>Description</th>
+                        <th>Category</th>
+                        <th>Quantity</th>
+                        <th>Location</th>
+                        <th>Expiry Date</th>
+                        <th>Action</th>
+                    </tr>
+                    {% for item in donation_items %}
+                    <tr>
+                        <td>{{ item.title }}</td>
+                        <td>{{ item.description }}</td>
+                        <td>{{ item.category }}</td>
+                        <td>{{ item.quantity }}</td>
+                        <td>{{ item.location }}</td>
+                        <td>{{ item.expiry_date }}</td>
+                        <td>
+                            {% if username == item.posted_by %}
+                                <a href="{{ url_for('main.delete_donation', item_id=item.item_id) }}">Delete</a>
+                            {% elif user_category == 'Needy' %}
+                            {% endif %}
+                                {% if not item.claimed_by %}
+                                    <form method="POST" action="{{ url_for('main.claim_donation') }}">
+                                        <input type="hidden" name="item_id" value="{{ item.item_id }}">
+                                        <input type="submit" value="Claim">
+                                    </form>
+                                {% elif item.claimed_by == username %}
+                                    <form method="POST" action="{{ url_for('main.unclaim_donation') }}">
+                                        <input type="hidden" name="item_id" value="{{ item.item_id }}">
+                                        <input type="submit" value="Unclaim">
+                                    </form>
+                                {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </main>
+</body>
+</html>
